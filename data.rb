@@ -1,6 +1,6 @@
 require 'data_mapper' 
 
-DataMapper.setup(:default, 'postgres://postgres:@/email_crawler')
+DataMapper.setup(:default, ENV['DATABASE_URL'])
 # DataMapper.setup(:default, 'sqlite3:data.db')
 DataMapper::Property::String.length(4096)
 
@@ -36,7 +36,7 @@ class Address
   property :id,         Serial
   property :created_at, DateTime
   property :email,      String
-  property :sent_count, Integer
+  property :sent_count, Integer, :default  => 0 
   property :sent_at,    DateTime
 
   belongs_to :site

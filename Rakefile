@@ -41,7 +41,7 @@ task :send_email do
 
   Address.each do |address|
     mail['from'] = 'mandeep@eroslabs.co'
-    mail[:to]    = address.email
+    mail[:to]    =  address.email
     mail.subject = 'This is a test email'
     mail.deliver!
     address.update(:sent_count => (address.sent_count + 1), :sent_at => Time.now)

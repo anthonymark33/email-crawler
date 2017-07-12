@@ -31,3 +31,8 @@ You should see output like this:
 
 Each row in the exported data contains the email address, the date/time that it was collected, the host
 of the site where it was collected, and the URL for the specific page where it was found.
+
+
+To send emails to users present in Addresses table, us the "send_email" Rake task:
+
+    rake send_email

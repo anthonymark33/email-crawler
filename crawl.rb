@@ -2,39 +2,45 @@ require 'uri'
 require 'anemone'
 require_relative 'data'
 
-ARGV.each do |target|
-  
-  uri = URI(target)
-  site = Site.first_or_create({ :host => uri.host }, { :created_at => Time.now })
-  $stderr.puts "Scanning #{uri.host}"
-  
-  Anemone.crawl(target) do |anemone|
-    anemone.storage = Anemone::Storage.PStore('pages.pstore')
-    
-    anemone.on_every_page do |crawled_page|
-      $stderr.puts crawled_page.url
+class Crawl
+  def initialize urls
+    @urls = urls
+  end
 
-      crawled_page.body.scan(/[\w\d.]+[\w\d]+[\w\d.-]@[\w\d.-]+\.\w{2,6}/).each do |address|
+  def scrape
+    @urls.each do |target|
+      uri = URI(target)
+      site = Site.first_or_create({ :host => uri.host }, { :created_at => Time.now })
+      $stderr.puts "Scanning #{uri.host}"
+      
+      Anemone.crawl(target) do |anemone|
+        anemone.storage = Anemone::Storage.PStore('pages.pstore')
+        anemone.on_every_page do |crawled_page|
+          $stderr.puts crawled_page.url
 
-        if Address.first(:email => address).nil?
-          page = Page.first_or_create(
-            { :url => crawled_page.url.to_s },
-            {
-              :site => site,
-              :created_at => Time.now
-            }
-          )
+          crawled_page.body.scan(/[\w\d.]+[\w\d]+[\w\d.-]@[\w\d.-]+\.\w{2,6}/).each do |address|
 
-          Address.create(
-            :email => address,
-            :site => site,
-            :page => page,
-            :created_at => Time.now
-          )
+            if Address.first(:email => address).nil?
+              page = Page.first_or_create(
+                { :url => crawled_page.url.to_s },
+                {
+                  :site => site,
+                  :created_at => Time.now
+                }
+              )
 
-          puts address
+              Address.create(
+                :email => address,
+                :site => site,
+                :page => page,
+                :created_at => Time.now
+              )
+
+              puts address
+            end
+
+          end
         end
-
       end
     end
   end

@@ -15,6 +15,7 @@ class Site
   has n, :pages
 
   validates_presence_of :host
+  validates_uniqueness_of :host
 end
 
 class Page
@@ -28,6 +29,7 @@ class Page
   has n, :addresses
 
   validates_presence_of :url
+  validates_uniqueness_of :url
 end
 
 class Address
@@ -43,6 +45,7 @@ class Address
   belongs_to :page
 
   validates_presence_of :email
+  validates_uniqueness_of :email
 end
 
 DataMapper.finalize

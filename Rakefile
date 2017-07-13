@@ -1,6 +1,7 @@
 require 'csv'
 require 'mail'
 require_relative 'data'
+require_relative 'crawl'
 
 task :export do
   
@@ -38,12 +39,16 @@ task :send_email do
   mail = Mail.new do
     body File.read('mailer_template.txt')
   end
-
-  Address.each do |address|
+  Address.all(:sent_at.lte => (DateTime.now + 30)).each do |address|
     mail['from'] = 'mandeep@eroslabs.co'
     mail[:to]    =  address.email
     mail.subject = 'This is a test email'
     mail.deliver!
     address.update(:sent_count => (address.sent_count + 1), :sent_at => Time.now)
   end
+end
+
+task :crawl_existing_pages do
+  crawl = Crawl.new Site.all.map(&:host)
+  crawl.scrape
 end

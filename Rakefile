@@ -2,6 +2,7 @@ require 'csv'
 require 'mail'
 require_relative 'data'
 require_relative 'crawl'
+require_relative 'constants' 
 
 task :export do
   
@@ -29,8 +30,8 @@ task :send_email do
       :address => 'smtp.sendgrid.net',
       :port => '587',
       :domain => 'heroku.com',
-      :user_name => ENV['SENDGRID_USERNAME'], 
-      :password => ENV['SENDGRID_KEY'],
+      :user_name => SENDGRID_USERNAME, 
+      :password => SENDGRID_KEY,
       :authentication => :plain,
       :enable_starttls_auto => true
     }

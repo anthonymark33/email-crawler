@@ -1,6 +1,7 @@
-require 'data_mapper' 
+require 'data_mapper'
+require_relative 'constants' 
 
-DataMapper.setup(:default, ENV['DATABASE_URL'])
+DataMapper.setup(:default, DATABASE_URL)
 # DataMapper.setup(:default, 'sqlite3:data.db')
 DataMapper::Property::String.length(4096)
 

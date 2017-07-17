@@ -1,5 +1,5 @@
 require 'data_mapper'
-require_relative 'constants' 
+require_relative 'constants'
 
 DataMapper.setup(:default, DATABASE_URL)
 # DataMapper.setup(:default, 'sqlite3:data.db')
@@ -11,6 +11,7 @@ class Site
   property :id,         Serial
   property :created_at, DateTime
   property :host,       String
+  property :last_scraped_at, DateTime
 
   has n, :addresses
   has n, :pages
@@ -39,7 +40,7 @@ class Address
   property :id,         Serial
   property :created_at, DateTime
   property :email,      String
-  property :sent_count, Integer, :default  => 0 
+  property :sent_count, Integer, :default  => 0
   property :sent_at,    DateTime
 
   belongs_to :site

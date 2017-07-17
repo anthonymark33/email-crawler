@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'anemone'
+gem 'spidr'
 gem 'data_mapper'
 gem 'dm-mysql-adapter'
 gem 'mail'

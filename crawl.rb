@@ -1,45 +1,30 @@
 require 'uri'
-require 'anemone'
+require 'spidr'
+require "byebug"
 require_relative 'data'
 
 class Crawl
-  def initialize urls
-    @urls = urls
+  def initialize (url)
+    @url = "https://www.bluenation.co/"
   end
 
   def scrape
-    @urls.each do |target|
-      uri = URI(target)
-      site = Site.first_or_create({ :host => uri.host }, { :created_at => Time.now })
-      $stderr.puts "Scanning #{uri.host}"
-      
-      Anemone.crawl(target) do |anemone|
-        anemone.storage = Anemone::Storage.PStore('pages.pstore')
-        anemone.on_every_page do |crawled_page|
-          $stderr.puts crawled_page.url
-          unless crawled_page.body.nil? && crawled_page.body == ''
-            crawled_page.body.scan(/[\w\d.]+[\w\d]+[\w\d.-]@[\w\d.-]+\.\w{2,6}/).each do |address|
+    Spidr.site(@url) do |spider|
+      spider.every_html_page do |page|
+        page.body.scan(/[\w\d.]+[\w\d]+[\w\d.-]@[\w\d.-]+\.\w{2,6}/).each do |address|
+          if Address.first(:email => address).nil?
+            page_db = Page.first_or_create(
+              { :url => page.url.to_s },
+              {
+                :created_at => Time.now
+              }
+            )
 
-              if Address.first(:email => address).nil?
-                page = Page.first_or_create(
-                  { :url => crawled_page.url.to_s },
-                  {
-                    :site => site,
-                    :created_at => Time.now
-                  }
-                )
-
-                Address.create(
-                  :email => address,
-                  :site => site,
-                  :page => page,
-                  :created_at => Time.now
-                )
-
-                puts address
-              end
-
-            end
+            Address.create(
+              :email => address,
+              :page => page_db,
+              :created_at => Time.now
+            )
           end
         end
       end

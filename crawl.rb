@@ -1,7 +1,6 @@
 require 'uri'
 require "byebug"
 require "typhoeus"
-require 'oga'
 require_relative 'data'
 
 class Crawl
@@ -15,7 +14,6 @@ class Crawl
     pages.each do |page|
       request = Typhoeus::Request.new(page.url, followlocation: true)
       request.on_complete do |response|
-        byebug
         page.update(:visited => true, :last_scraped_at => Time.now)
         create_new_links(response.body, page)
         create_new_addresses(response.body)
@@ -23,8 +21,10 @@ class Crawl
       end
       hydra.queue(request)
     end
+    puts "============ running hydra ============="
     hydra.run
-    byebug
+
+    puts "============ run recursive ============="
     scrape(Page.all(:visited => false, limit: 200))
 
     # Spidr.site(@url) do |spider|
@@ -50,28 +50,37 @@ class Crawl
   end
 
   def create_new_addresses(body)
-    byebug
     body.scan(/[\w\d.]+[\w\d]+[\w\d.-]@[\w\d.-]+\.\w{2,6}/).each do |address|
       if Address.first(:email => address).nil?
-        Address.create(
+        add = Address.create(
           :email => address,
           :created_at => Time.now
         )
+        puts "address ========= #{address}" if add.saved?
       end
     end
   end
 
-  def create_new_links(body, page)
-    byebug
+  def create_new_links(body, page_db)
     doc = Nokogiri::HTML.parse(body)
-    page = URI.parse(page.url)
-    urls = doc.search('a[href]').select{ |n| n['href'][/http/] }.map{ |n| n['href']}
+    page = URI.parse(page_db.url)
+    urls = doc.search('a[href]').select{ |n| n['href'][/http|https|\//] }.map{ |n| n['href']}
     urls.each do |url|
-      byebug
-      url = url.split('?')[0]
-      href = URI.parse(url)
-      if page.hostname == href.hostname
-        Page.first_or_create({:url => url}, {created_at: Time.now, visited: false,})
+      begin
+        url = url.split('?')[0]
+        if url[0] == "/"
+          href = URI.join("#{page.scheme}://#{page.host}", url)
+        else
+          href = URI.parse(url)
+        end
+        if page.hostname == href.hostname
+          pag = Page.first_or_create({:url => href.to_s}, {created_at: Time.now, visited: false, site: page_db.site})
+          puts "page ================ #{href.to_s}" if pag.saved?
+        end
+      rescue URI::InvalidURIError => e
+        puts "bad url skipping url ================ #{url}"
+      rescue URI::InvalidComponentError => e
+        puts "bad url 'missing opaque part' skipping url ================ #{url}"
       end
     end
   end

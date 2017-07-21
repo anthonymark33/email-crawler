@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'spidr'
+gem "typhoeus"
+gem 'nokogiri'
 gem 'data_mapper'
 gem 'dm-mysql-adapter'
 gem 'mail'

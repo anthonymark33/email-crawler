@@ -1,7 +1,8 @@
 require 'uri'
 require_relative 'data'
 
-ARGV.each do |site|
-  site = Site.create(:host => site, :created_at => Time.now, :last_scraped_at => Time.now)
+ARGV.each do |url|
+  site = Site.create(:host => url, :created_at => Time.now, :last_scraped_at => Time.now)
+  page = Page.create(:url => url, :created_at => Time.now, visited: false, site: site)
   $stderr.puts "inserted #{site} into sites" if site.saved?
 end

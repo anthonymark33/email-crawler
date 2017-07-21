@@ -13,7 +13,6 @@ class Site
   property :host,       String
   property :last_scraped_at, DateTime
 
-  has n, :addresses
   has n, :pages
 
   validates_presence_of :host
@@ -26,9 +25,10 @@ class Page
   property :id,         Serial
   property :created_at, DateTime
   property :url,        String
+  property :visited,   Boolean
+  property :last_scraped_at, DateTime
 
   belongs_to :site
-  has n, :addresses
 
   validates_presence_of :url
   validates_uniqueness_of :url
@@ -43,8 +43,6 @@ class Address
   property :sent_count, Integer, :default  => 0
   property :sent_at,    DateTime
 
-  belongs_to :site
-  belongs_to :page
 
   validates_presence_of :email
   validates_uniqueness_of :email

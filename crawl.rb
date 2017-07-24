@@ -4,7 +4,7 @@ require "typhoeus"
 require_relative 'data'
 
 class Crawl
-  def initialize (url)
+  def initialize
   end
 
   def scrape(pages=[])
@@ -12,8 +12,9 @@ class Crawl
     return unless pages[0]
     hydra = Typhoeus::Hydra.new(max_concurrency: 20)
     pages.each do |page|
-      request = Typhoeus::Request.new(page.url, followlocation: true)
+      request = Typhoeus::Request.new(page.url, cookiefile: "~/tcookie", cookiejar: "~/tcookiezar", followlocation: true, headers: {"User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1309.0 Safari/537.17""Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1309.0 Safari/537.17"})
       request.on_complete do |response|
+        puts "Ghanta Ghanta Ghanta Ghanta Ghanta" if response.body == "" or response.body == " "
         page.update(:visited => true, :last_scraped_at => Time.now)
         create_new_links(response.body, page)
         create_new_addresses(response.body)
@@ -74,8 +75,9 @@ class Crawl
           href = URI.parse(url)
         end
         if page.hostname == href.hostname
-          pag = Page.first_or_create({:url => href.to_s}, {created_at: Time.now, visited: false, site: page_db.site})
-          puts "page ================ #{href.to_s}" if pag.saved?
+          if Page.first(:url => href.to_s).nil?
+            pag = Page.create({:url => href.to_s, created_at: Time.now, visited: false, site: page_db.site})
+          end
         end
       rescue URI::InvalidURIError => e
         puts "bad url skipping url ================ #{url}"

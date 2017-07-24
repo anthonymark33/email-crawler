@@ -51,10 +51,6 @@ task :send_email do
 end
 
 task :crawl_existing_pages do
-
-  Site.all(:last_scraped_at.lte => (DateTime.now + 15)).each do |site|
-    crawl = Crawl.new site.host
+    crawl = Crawl.new
     crawl.scrape
-    site.update(:last_scraped_at => DateTime.now)
-  end
 end

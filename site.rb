@@ -8,3 +8,5 @@ ARGV.each do |url|
 end
 
 # UPDATE pages SET visited = false WHERE visited=true;
+#
+# https://weworkremotely.com

@@ -5,6 +5,8 @@ require_relative 'data'
 
 class Crawl
   def initialize
+    system("rm tmp/crawl.pid")
+    system("echo #{Process.pid} >tmp/crawl.pid")
   end
 
   def scrape(pages=[])
@@ -14,6 +16,7 @@ class Crawl
     pages.each do |page|
       request = Typhoeus::Request.new(page.url, cookiefile: "~/tcookie", cookiejar: "~/tcookiezar", followlocation: true, headers: {"User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1309.0 Safari/537.17""Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1309.0 Safari/537.17"})
       request.on_complete do |response|
+        puts "."
         puts "Ghanta Ghanta Ghanta Ghanta Ghanta" if response.body == "" or response.body == " "
         page.update(:visited => true, :last_scraped_at => Time.now)
         create_new_links(response.body, page)
@@ -87,3 +90,7 @@ class Crawl
     end
   end
 end
+
+
+crawl = Crawl.new
+crawl.scrape

@@ -50,6 +50,10 @@ task :send_email do
   end
 end
 
+task :send_emails do
+  Crawl.send_emails
+end
+
 task :crawl_existing_pages do
     crawl = Crawl.new
     crawl.scrape

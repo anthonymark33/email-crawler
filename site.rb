@@ -10,3 +10,8 @@ end
 # UPDATE pages SET visited = false WHERE visited=true;
 #
 # https://weworkremotely.com
+# https://remotefriendly.work/
+# https://goremote.io
+#
+# INSERT INTO sites (host) VALUES ('https://goremote.io');
+#INSERT INTO pages (url, visited, site_id) VALUES ('https://goremote.io', false, 4 );

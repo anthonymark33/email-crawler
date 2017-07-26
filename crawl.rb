@@ -20,6 +20,21 @@ class Crawl
     message_params =  { from: 'Vipin Nagpal <vipin@doublegeek.co>',
                         to:   'vipin.itm@gmail.com',
                         subject: 'Looking forward to work with you',
+                        html: "<p>Hi there,</p>
+
+<p>I hope you're having a great day!</p>
+
+<p>My name is Vipin Nagpal, I am the founder of DoubleGeek. DoubleGeek is a community of developers dedicated to learning and sharing latest design and development tips through the public platform. We also specialize in building scalable web and mobile applications of all kind. We have been helping some really cool startups with all their engineering efforts for last 5 years.</p>
+
+<p>We have worked with companies like MyTime, WeWork, Disney, Best Buy, Chipotle and more. Although our portfolio consists of some great names, we do not charge premium rates.</p>
+
+<p>Whether you have a startup idea or already have a product you want to build on, we can help to a great extent. Spend a few more minutes going through our portfolio at <a href='http://hire.doublegeek.co/'>http://hire.doublegeek.co/</a> and take a look at what we are up to at <a href='http://www.doublegeek.co/'>http://www.doublegeek.co/</a>.</p>
+
+<p>In case you don't have any work for us right now, please refer us to anyone you know of, who could use our services.</p>
+
+<p>PS: We are running some great offers on our services for next two months. Ask us anything by replying to this email.</p>
+
+<p>Cheers!</p> <p>Vipin Nagpal</p> <p><a href='http://www.doublegeek.co'>doublegeek.co | +91 9990222687</p>",
                         text:    "Hi there,
 
 I hope you're having a great day!
@@ -42,12 +57,12 @@ doublegeek.co | +91 9990222687"
 
     addrs  = Address.all(:sent_count.lt => 1 )
     addrs.each do |addr|
-      message_params[:to] = addr.email
+      message_params[:to] = "vipin.itm@gmail.com" || addr.email
 
       begin
         res = mg_client.send_message 'mg.doublegeek.co', message_params
         puts "Sent: #{addr.email} #{res.code}"
-        addr.update(sent_count: addr.sent_count + 1, sent_at: Time.now)
+        # addr.update(sent_count: addr.sent_count + 1, sent_at: Time.now)
       rescue Exception => e
         puts e.message
         raise e

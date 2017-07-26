@@ -57,12 +57,12 @@ doublegeek.co | +91 9990222687"
 
     addrs  = Address.all(:sent_count.lt => 1 )
     addrs.each do |addr|
-      message_params[:to] = "vipin.itm@gmail.com" || addr.email
+      message_params[:to] = addr.email
 
       begin
         res = mg_client.send_message 'mg.doublegeek.co', message_params
         puts "Sent: #{addr.email} #{res.code}"
-        # addr.update(sent_count: addr.sent_count + 1, sent_at: Time.now)
+        addr.update(sent_count: addr.sent_count + 1, sent_at: Time.now)
       rescue Exception => e
         puts e.message
         raise e
